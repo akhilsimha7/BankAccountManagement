@@ -3,11 +3,18 @@
 #include <thread>
 using namespace std;
 
+struct Statement
+{
+    int statementAmount;
+    std::string statementType;
+};
+
 class accountHolder
 {
 private:
     int accountNumber, balance;
     string userName;
+    vector<Statement> accountHistory;
 
 public:
     accountHolder()
@@ -15,6 +22,7 @@ public:
         accountNumber = 0000;
         balance = 00;
         userName = "John Doe";
+        
     }
     void showBalance()
     {
@@ -24,16 +32,33 @@ public:
     {
         balance += amount;
         cout << amount << " Euros has been deposited to your account." << endl;
+        accountHistory.push_back({amount, "Deposited"});
     }
     void withdraw(int amount)
     {
-        balance -= amount;
-        cout << amount << " Euros has been withdrawn from your account." << endl;
+        int withdrawlAmount = balance - amount;
+        if (withdrawlAmount > 0)
+        {
+            balance -= amount;
+            cout << amount << " Euros has been withdrawn from your account." << endl;
+            accountHistory.push_back({amount, "Withdrawl"});
+        }
+        else{
+            cout << "You are low on balance\n";
+        }
     }
     void setDetails(string name, int feedBalance)
     {
         userName = name;
         balance = feedBalance;
+    }
+    void bankStatement()
+    {
+        cout << "Amount    |    Amount \n ----------------------\n";
+        for (const auto &item : accountHistory)
+        {
+            std::cout << item.statementAmount << "    |    " << item.statementType << std::endl;
+        }
     }
 };
 
@@ -45,7 +70,7 @@ int main()
     cout << "-------------- Welcome to the BAM ! ----------- " << endl;
     while (true)
     {
-        cout << "\nWhat activity would you like to perform: \n------------------------------------ \n 1. Check Balance \n 2. Deposit Money \n 3. Withdraw Money \n \nInput: ";
+        cout << "\nWhat activity would you like to perform: \n------------------------------------ \n 1. Check Balance \n 2. Deposit Money \n 3. Withdraw Money \n 4. Bank Statement \n \nInput: ";
         cin >> userInput;
         cout << "- - - - - - - - - - - - - - - - - - - \n";
         switch (userInput)
@@ -63,11 +88,14 @@ int main()
             cin >> withdrawAmount;
             Akhil.withdraw(withdrawAmount);
             break;
+        case 4:
+            Akhil.bankStatement();
+            break;
         default:
-            cout << "Wrong Input!!!";
+            cout << "No/Wrong Input!!!";
             break;
         }
         cout << "- - - - - - - - - - - - - - - - - - - \n";
-        std::this_thread::sleep_for(2000ms);
+        std::this_thread::sleep_for(1000ms);
     }
 }
